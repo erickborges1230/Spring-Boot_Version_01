@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class FuncionarioController {
@@ -26,7 +27,9 @@ public class FuncionarioController {
                     <a href="listarCidadesFuncionarios">2. Listar Cidades Funcionários</a><br/>
                      <a href="CalcularFolhaFuncionarios">3. Calcular Folha dos Funcionários</a><br/>
                      <a href="listarFuncionariosIdadeMenor30">4. Listar Funcionários com idade menor que 30 anos</a><br/>
-                     <a href="listarFuncionariosIdadeMaior30">4. Listar Funcionários com idade maior que 30 anos</a><br/>
+                     <a href="listarFuncionariosIdadeMaior30">5. Listar Funcionários com idade maior que 30 anos</a><br/>
+                     <a href="listarFuncionariosMaiorSalário">6. Listar Funcionários com maior salário</a><br/>
+                     <a href="listarFuncionariosMenorSalário">7. Listar Funcionários com menor salário</a><br/>
                 </body>
                </html>
                """;
@@ -71,6 +74,23 @@ public class FuncionarioController {
                 }
                 """.formatted(totalFuncionarios, mediaSalarial);
         return new ResponseEntity<String>(response,HttpStatus.OK);
+    }
+    //Listando o maior salário
+    @GetMapping(value = "/listarFuncionariosMaiorSalário")
+    public ResponseEntity<Optional<funcionario>> listarFuncionariosMaiorSalário()
+    {
+        List<funcionario> funcionarios = funcionarioService.listAll();
+        //Para encontar o maior salário: primeiro fazer uma redução depois fazer uma comparação
+        Optional<funcionario> funcionario = funcionarios.stream().reduce((f1, f2)-> f1.getSalario()> f2.getSalario() ? f1:f2);
+        return new ResponseEntity<Optional<funcionario>>(funcionario, HttpStatus.OK);
+    }
+    @GetMapping(value = "/listarFuncionariosMenorSalário")
+    public ResponseEntity<Optional<funcionario>> listarFuncionariosMenorSalário()
+    {
+        List<funcionario> funcionarios = funcionarioService.listAll();
+        //Para encontar o maior salário: primeiro fazer uma redução depois fazer uma comparação
+        Optional<funcionario> funcionario = funcionarios.stream().reduce((f1, f2)-> f1.getSalario()< f2.getSalario() ? f1:f2);
+        return new ResponseEntity<Optional<funcionario>>(funcionario, HttpStatus.OK);
     }
 
 
