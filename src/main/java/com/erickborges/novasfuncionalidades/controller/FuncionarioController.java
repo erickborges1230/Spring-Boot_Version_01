@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +100,29 @@ public class FuncionarioController {
         List<funcionario> funcionarios = funcionarioService.listAll().stream().sorted((f1, f2)-> Double.compare(f1.getSalario(), f2.getSalario())).toList(); //depois transforma em lista
         return new ResponseEntity<List<funcionario>>(funcionarios, HttpStatus.OK);
     }
+    @GetMapping(value = "/listarAnoNascimentoFuncionariosMaisAntigo")
+    public ResponseEntity<String> listarAnoNascimentoFuncionariosMaisAntigo()
+    {
+        List<funcionario> funcionarios = funcionarioService.listAll();
+        Optional<funcionario> funcionario = funcionarios.stream().reduce((f1, f2)-> f1.getIdade()> f2.getIdade() ? f1:f2);
+        int maiorIdade = 0;
+        String nome = "";
+        if (funcionario.isPresent())
+        {
+            maiorIdade = funcionario.get().getIdade();
+            nome = funcionario.get().getNome();
+        }
+        //Para saber a idade do funcionário
+        LocalDate hoje = LocalDate.now();
+       int anoNascimentoProvavel = hoje.getYear() - maiorIdade;
 
+        String response = """
+                {
+                    "Nome do funcionário ": %s
+                    "Provável Ano de Nascimento": %d
+                }
+                """.formatted(nome, maiorIdade);
+        return new ResponseEntity<String>(response,HttpStatus.OK);
+    }
 
 }
