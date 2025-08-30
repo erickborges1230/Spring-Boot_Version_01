@@ -8,14 +8,14 @@ import java.util.Objects;
 public class funcionario {
 
     //Atributos
-    protected String nome;
-    protected int idade;
-    protected String cargo;
-    protected String departamento;
-    protected String cidade;
-    protected String estado;
-    protected String formatoTrablho;
-    protected Double salario;
+    private String nome;
+    private int idade;
+    private String cargo;
+    private String departamento;
+    private String cidade;
+    private String estado;
+    private String formatoTrablho;
+    private Double salario;
 
     public funcionario(String nome, int idade, String cargo, String departamento, String cidade, String estado, String formatoTrablho, Double salario) {
         this.nome = nome;
