@@ -13,27 +13,44 @@ import java.util.List;
 @RestController
 public class FuncionarioController {
 
-    //Chamando a camada de service
+    //Chamando a camada service
     @Autowired
     private funcionarioService funcionarioService;
-    @GetMapping("/")
+    @GetMapping(value = "/")
     public ResponseEntity<String> inicio()
     {
        String response = """ 
                <html>
                 <body>
-                    <a href="listarFuncionarios">1. Listar Funcionários
+                    <a href="listarFuncionarios">1. Listar Funcionários</a><br/>
+                    <a href="listarCidadesFuncionarios">2. Listar Cidades Funcionários</a><br/>
+                     <a href="CalcularFolhaFuncionarios">2. Calcular Folha dos Funcionários</a><br/>
                 </body>
                </html>
                """;
         return new ResponseEntity<String>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/listarFuncionarios")
+    @GetMapping(value = "/listarFuncionarios")
     public ResponseEntity<List<funcionario>> listarFuncionairos()
     {
         List<funcionario> funcionarios = funcionarioService.listAll();
+        //Retornando uma lista de String
         return new ResponseEntity<List<funcionario>>(funcionarios, HttpStatus.OK);
+    }
+    @GetMapping(value = "/listarCidadesFuncionarios")
+    public ResponseEntity<List<String>> listarCidadesFuncionairos()
+    {
+        List<funcionario> funcionarios = funcionarioService.listAll();
+        List<String> cidades = funcionarios.stream().map(funcionario::getCidade).toList();//Transformando a lista de funcionário em um Stream e depois mapeando
+        return new ResponseEntity<List<String>>(cidades, HttpStatus.OK);
+    }
+    @GetMapping(value = "/CalcularFolhaFuncionarios")
+    public ResponseEntity<List<String>> CalcularFolhaFuncionarios()
+    {
+        List<funcionario> funcionarios = funcionarioService.listAll();
+        List<String> somaSalarios = funcionarios.stream().map(funcionario::getSalario).toList();
+        return new ResponseEntity<List<String>>(somaSalarios, HttpStatus.OK);
     }
 
 }

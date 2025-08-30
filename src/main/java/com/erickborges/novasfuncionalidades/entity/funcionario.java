@@ -15,7 +15,7 @@ public class funcionario {
     private String cidade;
     private String estado;
     private String formatoTrablho;
-    private String salario;
+    protected String salario;
 
     public funcionario(String nome, int idade, String cargo, String departamento, String cidade, String estado, String formatoTrablho, String salario) {
         this.nome = nome;
