@@ -92,6 +92,13 @@ public class FuncionarioController {
         Optional<funcionario> funcionario = funcionarios.stream().reduce((f1, f2)-> f1.getSalario()< f2.getSalario() ? f1:f2);
         return new ResponseEntity<Optional<funcionario>>(funcionario, HttpStatus.OK);
     }
+    //Ordenando por maior salário e depos transformando em uma lista
+    @GetMapping(value = "/listarFuncionariosOrdenados")
+    public ResponseEntity<List<funcionario>> listarFuncionariosOrdenadoso()
+    {
+        List<funcionario> funcionarios = funcionarioService.listAll().stream().sorted((f1, f2)-> Double.compare(f1.getSalario(), f2.getSalario())).toList(); //depois transforma em lista
+        return new ResponseEntity<List<funcionario>>(funcionarios, HttpStatus.OK);
+    }
 
 
 }
