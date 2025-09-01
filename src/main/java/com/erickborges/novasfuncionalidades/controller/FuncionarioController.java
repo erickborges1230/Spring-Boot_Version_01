@@ -8,6 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -114,6 +119,7 @@ public class FuncionarioController {
         }
         //Para saber a idade do funcionário
         LocalDate hoje = LocalDate.now();
+
        int anoNascimentoProvavel = hoje.getYear() - maiorIdade;
 
         String response = """
@@ -122,6 +128,34 @@ public class FuncionarioController {
                     "Provável Ano de Nascimento": %d
                 }
                 """.formatted(nome, maiorIdade);
+        return new ResponseEntity<String>(response,HttpStatus.OK);
+    }
+    //Inserindo dados no meu banco de dados
+    @GetMapping(value = "/inserirNovoFuncionarioJSON")
+    public ResponseEntity<String> inserirNovoFuncionarioJSON() {
+        var funcionarios = funcionarioService.listAll();
+        String response = "";
+        try {
+            String novoFuncionario = """
+                    "nome": "Pedro Ramos",
+                    "idade": 23,
+                    "cargo": "Engenheiro de Software",
+                    "departamento": "Ti",
+                    salário": 100000,
+                    "endereço":{
+                        "rua": "Avenida Nazaré",
+                        "Numero": 33,
+                        "cidade": "Belém",
+                        "estado": "Pará",
+                        "cep": 8888-111,
+                    """;
+            //passando o caminho para inserir os dados
+            Files.writeString(Path.of("C:/Users/erick/OneDrive/Documentos/Material para estudo_Java/novasfuncionalidades/src/main/java/com/erickborges/novasfuncionalidades/funcionarios.json"),
+                    novoFuncionario, StandardOpenOption.APPEND);
+            response = Files.readString(Path.of("C:/Users/erick/OneDrive/Documentos/Material para estudo_Java/novasfuncionalidades/src/main/java/com/erickborges/novasfuncionalidades/funcionarios.json"));
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         return new ResponseEntity<String>(response,HttpStatus.OK);
     }
 
