@@ -1,5 +1,6 @@
 package com.erickborges.novasfuncionalidades.controller;
 
+import com.erickborges.novasfuncionalidades.empresa.*;
 import com.erickborges.novasfuncionalidades.entity.funcionario;
 import com.erickborges.novasfuncionalidades.service.funcionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.*;
@@ -187,8 +187,8 @@ public class FuncionarioController {
 
         double maiorSalario = funcionario.get().getSalario();
 
-        //criando um salário de forma aleatória com algoritimo RandomGenerator
-        RandomGenerator randomGenerator = RandomGeneratorFactory.of("Teste").create(999);
+        //criando um salário de forma aleatória(vazio) com algoritimo RandomGenerator
+        RandomGenerator randomGenerator = RandomGeneratorFactory.of("Teste").create(999); //<- este aqui
 
         double novoSalario = randomGenerator.nextDouble(maiorSalario - menorSalario + 1) + menorSalario;
         String response = """
@@ -197,6 +197,50 @@ public class FuncionarioController {
                 }
                 """.formatted(novoSalario);
         return new ResponseEntity<String>(response,HttpStatus.OK);
+    }
+    @GetMapping("/listarAtividadeFuncionarioDetalhadamente")
+    public ResponseEntity<Map<?,?>> listarAtividadeFuncionarioDetalhadamente(){
+        List<funcionario> funcionarios = funcionarioService.listAll();
+        var nomeAtividade = new LinkedHashMap<>();
+        funcionarios.forEach(funcionario -> {
+            Departamento atividade = switch (funcionario.getDepartamento())
+            {
+                case "Marketing" ->
+                {
+                    yield new Marketing("Venda pela internet", "Valor do orçamento em 24h", 1000);
+                }
+                case "Venda" ->
+                {
+                    yield new Vendas("Carro",  1000);
+                }
+                case "TI" ->
+                {
+                    yield new TI("Modernização de atendimento ao cliente",  funcionario.getNome());
+                }
+                case "Finanças" ->
+                {
+                    yield new Financas("Vendas", 1000);
+                }
+                case "Design" ->
+                {
+                    yield new Design("Carro BMW 400C", "Preta");
+                }
+                default -> null;
+            };
+            if (atividade instanceof Marketing marketing)
+                System.out.println( ((Marketing) atividade).nomeCampanha());
+            else if (atividade instanceof Vendas vendas)
+                System.out.println( ((Vendas) atividade).produto());
+            else if (atividade instanceof TI ti)
+                System.out.println( ((TI) atividade).nomeProjeto());
+            else if (atividade instanceof Financas financas)
+                System.out.println( ((Financas) atividade).nomeTransacao());
+            else if (atividade instanceof Design design)
+                System.out.println( ((Design) atividade).discricao());
+
+            nomeAtividade.put(funcionario.getNome(), atividade);
+        });
+        return new ResponseEntity<>(nomeAtividade, HttpStatus.OK);
     }
 
 }
