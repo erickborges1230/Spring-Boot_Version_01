@@ -14,8 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class FuncionarioController {
@@ -157,6 +156,23 @@ public class FuncionarioController {
             e.printStackTrace();
         }
         return new ResponseEntity<String>(response,HttpStatus.OK);
+    }
+    @GetMapping("/listarAtividadesFuncionarios")
+    public ResponseEntity<Map<?, ?>> listarAtividadesFuncionarios()
+    {
+        List<funcionario> funcionarios = new LinkedList<>();
+        var nomeAtividadeMap = new LinkedHashMap<>();
+        funcionarios.forEach(funcionario -> { //Uso do forEach => para cada funcionario
+            String atividade = switch (funcionario.getDepartamento())
+            {
+                case "vendas" -> "Atividade Principal ==> realizar venda";
+                case "Marketing" -> "Atividade Principal ==> realizar divugação";
+                //Só definir o restante dos cases
+                default -> "Ação não definidade";
+            };
+            nomeAtividadeMap.put(funcionario.getNome(), atividade);
+        });
+        return new ResponseEntity<>(nomeAtividadeMap, HttpStatus.OK);
     }
 
 }
