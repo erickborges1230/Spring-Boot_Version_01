@@ -15,6 +15,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.random.RandomGenerator;
+import java.util.random.RandomGeneratorFactory;
 
 @RestController
 public class FuncionarioController {
@@ -173,6 +175,28 @@ public class FuncionarioController {
             nomeAtividadeMap.put(funcionario.getNome(), atividade);
         });
         return new ResponseEntity<>(nomeAtividadeMap, HttpStatus.OK);
+    }
+    @GetMapping(value = "/gerarSalarioNovoFuncionario")
+    public ResponseEntity<String> gerarSalarioNovoFuncionario()
+    {
+        var funcionarios = funcionarioService.listAll();
+        Optional <funcionario> funcionario = funcionarios.stream().reduce((f1, f2)-> f1.getSalario()<f2.getSalario()? f1:f2);
+        double menorSalario = funcionario.get().getSalario();
+
+        funcionario = funcionarios.stream().reduce((f1, f2)-> f1.getSalario()>f2.getSalario()? f1:f2);
+
+        double maiorSalario = funcionario.get().getSalario();
+
+        //criando um salário de forma aleatória com algoritimo RandomGenerator
+        RandomGenerator randomGenerator = RandomGeneratorFactory.of("Teste").create(999);
+
+        double novoSalario = randomGenerator.nextDouble(maiorSalario - menorSalario + 1) + menorSalario;
+        String response = """
+                {
+                    "Salário novo funcionário": %d
+                }
+                """.formatted(novoSalario);
+        return new ResponseEntity<String>(response,HttpStatus.OK);
     }
 
 }
